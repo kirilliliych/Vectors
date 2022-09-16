@@ -1,6 +1,12 @@
 #ifndef SIZES_HPP
 #define SIZES_HPP
 
-const size_t VECTOR_COMPONENTS = 6;
+const size_t VECTOR_COMPONENTS      = 5;
+
+const int VECTOR_ARROW_PARALLEL_COMPONENT_SQRT_PIXEL_LENGTH = 15;
+const int VECTOR_ARROW_SIDE_COMPONENT_SQRT_PIXEL_LENGTH     = 8;
+
+const double SECONDS_AND_MINUTES_ARROW_ANGLE = -0.08727;
+const double HOURS_ARROW_ANGLE               = -0.5236;
 
 #endif

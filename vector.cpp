@@ -43,6 +43,7 @@ public:
     }
 };
 
+
 class Pixel
 {
 private:
@@ -80,7 +81,8 @@ public:
     // void drawpixel?
 };
 
-class CoordSys                                          // внести примитивы в координатную систему(чтобы не пересчитывать все каждый раз)   // текст для подписи координат
+
+class CoordSys                                                                                      // текст в текстуру?
 {
 private:
 
@@ -96,10 +98,10 @@ private:
     double x_scale_ = 0;
     double y_scale_ = 0;
 
-    void update_origin_x_position();
-    void update_origin_y_position();
     void update_x_scale();
     void update_y_scale();
+    void update_origin_x_position();
+    void update_origin_y_position();
 
 public:
 
@@ -108,7 +110,9 @@ public:
     CoordSys(double x_min, double y_min,
              double x_max, double y_max,
              int x_area_rect_point_1, int y_area_rect_point_1,
-             int x_area_rect_point_2, int y_area_rect_point_2);
+             int x_area_rect_point_2, int y_area_rect_point_2,
+             int x_origin_coord = COORD_SYS_ORIGIN_FICTIVE_COORD_VALUE,
+             int y_origin_coord = COORD_SYS_ORIGIN_FICTIVE_COORD_VALUE);
 
     double get_x_min()
     {
@@ -126,6 +130,14 @@ public:
     {
         return y_max_coord_;
     }
+    double get_x_origin()
+    {
+        return origin_point_.get_x();
+    }
+    double get_y_origin()
+    {
+        return origin_point_.get_y();
+    }
     double get_x_scale()
     {
         return x_scale_;
@@ -135,7 +147,7 @@ public:
         return y_scale_;
     }
 
-    void set_x_min(double x_min) // for changing coords? resize?
+    void set_x_min(double x_min)
     {
         x_min_coord_ = x_min;
     }
@@ -154,6 +166,7 @@ public:
 
     // TODO: do draw method to make coordsys visible in the window
 }; 
+
 
 class Event
 {
@@ -183,7 +196,7 @@ public:
     }
 };
 
-/********************************************************************************/
+
 class Drawable
 {
 protected:
@@ -198,7 +211,7 @@ public:
     }
 
 };
-/********************************************************************************/
+
 
 class Vector : public Drawable
 {
@@ -206,9 +219,6 @@ private:
 
     double x_coord_ = 0;
     double y_coord_ = 0;
-
-    int arrow_wings_length_ = 0;
-
     
 public:
     
@@ -227,11 +237,11 @@ public:
         type_ = DrawableType::VECTOR;
     }
 
-    double get_x()
+    double get_x() const
     {
         return x_coord_;
     }
-    double get_y()
+    double get_y() const
     {
         return y_coord_;
     }
@@ -271,6 +281,7 @@ public:
     {}
 };
 
+
 class ObjSysArr
 {   
 public:
@@ -281,8 +292,8 @@ public:
     size_t size_ = 0;
 
     void add(uint8_t *entity, CoordSys *axes, Point *beginning);
-    // erase? make a list of free places to fill emptys after erasing? remember place in array in vector to erase properly and to update if it was changed? 
 };
+
 
 class DisplayWindow
 {
@@ -340,17 +351,14 @@ public:
     int get_width();
     
     int get_height();
-
-    void set_redraw_required_flag(bool redraw_flag);
-
-    // TODO: resize with setters?
 };
 
 
 CoordSys::CoordSys(double x_min, double y_min, 
                    double x_max, double y_max,
                    int x_area_rect_point_1, int y_area_rect_point_1,
-                   int x_area_rect_point_2, int y_area_rect_point_2)
+                   int x_area_rect_point_2, int y_area_rect_point_2,
+                   int x_origin_coord, int y_origin_coord)
 
       : x_min_coord_(x_min), 
         y_min_coord_(y_min), 
@@ -367,8 +375,17 @@ CoordSys::CoordSys(double x_min, double y_min,
     area_rect_point_2_.set_x(x_area_rect_point_2);
     area_rect_point_2_.set_y(y_area_rect_point_2);
 
-    update_origin_x_position();
-    update_origin_y_position();
+    origin_point_.set_x(x_origin_coord);
+    if (x_origin_coord == COORD_SYS_ORIGIN_FICTIVE_COORD_VALUE)
+    {
+        update_origin_x_position();
+    }
+    
+    origin_point_.set_y(y_origin_coord);
+    if (y_origin_coord == COORD_SYS_ORIGIN_FICTIVE_COORD_VALUE)
+    {
+        update_origin_y_position();
+    }
 
     update_x_scale();
     update_y_scale();
@@ -514,7 +531,9 @@ void DisplayWindow::draw_vector(sf::Vertex *vector)
 {
     assert(vector != nullptr);
     
-    window_.draw(vector, 2, sf::Lines);
+    window_.draw(vector,     2, sf::Lines);
+    window_.draw(vector + 1, 2, sf::Lines);
+    window_.draw(vector + 3, 2, sf::Lines);
 }
 
 void DisplayWindow::draw_single_object(ObjSys *object_system_to_draw)
@@ -563,26 +582,50 @@ int DisplayWindow::get_height()
 }
 
 
-bool is_between(double left, double value, double right)
+bool is_in_rectangle(Point *point, Point *rect_angle1, Point *rect_angle2)
 {
-    assert(std::isfinite(left));
-    assert(std::isfinite(value));
-    assert(std::isfinite(right));
-
-    return ((left - DOUBLE_COMPARISON_PRECISION <= value)   && 
-            (value <= right + DOUBLE_COMPARISON_PRECISION)) ?
-    true : false;
-}
-
-bool is_in_rectangle(Point *first, Point *rect_angle1, Point *rect_angle2)
-{
-    assert(first       != nullptr);
+    assert(point       != nullptr);
     assert(rect_angle1 != nullptr);
     assert(rect_angle2 != nullptr);
 
-    return ((rect_angle1->get_x() - DOUBLE_COMPARISON_PRECISION < first->get_x()) && (first->get_x() < rect_angle2->get_x() + DOUBLE_COMPARISON_PRECISION) &&
-            (rect_angle1->get_y() - DOUBLE_COMPARISON_PRECISION < first->get_y()) && (first->get_y() < rect_angle2->get_y() + DOUBLE_COMPARISON_PRECISION))
+    return ((rect_angle1->get_x() - DOUBLE_COMPARISON_PRECISION < point->get_x()) && (point->get_x() < rect_angle2->get_x() + DOUBLE_COMPARISON_PRECISION) &&
+            (rect_angle1->get_y() - DOUBLE_COMPARISON_PRECISION < point->get_y()) && (point->get_y() < rect_angle2->get_y() + DOUBLE_COMPARISON_PRECISION))
     ? true : false;
+}
+
+void multiply_vector(Vector *vector, double  multiplier)
+{
+    assert(vector != nullptr);
+    assert(std::isfinite(multiplier));
+
+    vector->set_x(vector->get_x() * multiplier);
+    vector->set_y(vector->get_y() * multiplier);
+}
+
+double get_vector_length_square(Vector *vector)
+{
+    assert(vector != nullptr);
+
+    return vector->get_x() * vector->get_x() + vector->get_y() * vector->get_y();
+}
+
+void normalize_vector(Vector *vector)
+{
+    assert(vector != nullptr);
+
+    double denominator = get_vector_length_square(vector);
+    assert(denominator != 0);
+
+    vector->set_x(vector->get_x() / sqrt(denominator));
+    vector->set_y(vector->get_y() / sqrt(denominator));
+}
+
+void set_vector_length(Vector *vector, double length)
+{
+    assert(vector != nullptr);
+
+    normalize_vector(vector);
+    multiply_vector (vector, length);
 }
 
 bool form_line(ObjSys *object_system_to_draw, sf::Vertex *line, DisplayWindow *window)
@@ -592,28 +635,60 @@ bool form_line(ObjSys *object_system_to_draw, sf::Vertex *line, DisplayWindow *w
     assert(window                != nullptr);
 
     Vector *vector_to_draw = (Vector *) object_system_to_draw->entity_;
-    double x_beginning =  object_system_to_draw->beginning_->get_x();
-    double y_beginning =  object_system_to_draw->beginning_->get_y();
-    double x_ending    =  object_system_to_draw->beginning_->get_x() + vector_to_draw->get_x();
-    double y_ending    =  object_system_to_draw->beginning_->get_y() + vector_to_draw->get_y();
+    double x_beginning = object_system_to_draw->beginning_->get_x();
+    double y_beginning = object_system_to_draw->beginning_->get_y();
+    double x_ending    = object_system_to_draw->beginning_->get_x() + vector_to_draw->get_x();
+    double y_ending    = object_system_to_draw->beginning_->get_y() + vector_to_draw->get_y();
 
     Point rect_angle1{object_system_to_draw->axes_->get_x_min(), object_system_to_draw->axes_->get_y_min()};
     Point rect_angle2{object_system_to_draw->axes_->get_x_max(), object_system_to_draw->axes_->get_y_max()};
-    Point beginning{(double) x_beginning, (double) y_beginning};
-    Point ending   {(double) x_ending,    (double) y_ending};
+    Point beginning{x_beginning, y_beginning};
+    Point ending   {x_ending,    y_ending};
+    // std::cout << rect_angle1.get_x() << " " << rect_angle1.get_y() << " " << rect_angle2.get_x() << " " << rect_angle2.get_y() << std::endl;
+    // std::cout << x_beginning << " " << y_beginning << " " << x_ending << " " << y_ending << std::endl;
+    if ((!is_in_rectangle(&beginning, &rect_angle1, &rect_angle2)) ||
+        (!is_in_rectangle(&ending,    &rect_angle1, &rect_angle2)))
+    {
+        return false;
+    }
 
-    // if ((!is_in_rectangle(&beginning, &rect_angle1, &rect_angle2)) || 
-    //     (!is_in_rectangle(&ending,    &rect_angle1, &rect_angle2)));
-    // {
-    //     return false;
-    // }
-
-    line[0].position.x = (int) (x_beginning * object_system_to_draw->axes_->get_x_scale());
-    line[1].position.x = (int) (x_ending    * object_system_to_draw->axes_->get_x_scale());
-    line[0].position.y = window->get_height() - (int) (y_beginning * object_system_to_draw->axes_->get_y_scale());
-    line[1].position.y = window->get_height() - (int) (y_ending    * object_system_to_draw->axes_->get_y_scale());
+    line[0].position.x = (int) (x_beginning * object_system_to_draw->axes_->get_x_scale() + object_system_to_draw->axes_->get_x_origin());
+    line[1].position.x = (int) (x_ending    * object_system_to_draw->axes_->get_x_scale() + object_system_to_draw->axes_->get_x_origin());
+    line[0].position.y = window->get_height() - (int) (y_beginning * object_system_to_draw->axes_->get_y_scale()) - object_system_to_draw->axes_->get_y_origin();
+    line[1].position.y = window->get_height() - (int) (y_ending    * object_system_to_draw->axes_->get_y_scale()) - object_system_to_draw->axes_->get_y_origin();
 
     return true;
+}
+
+void form_arrow(ObjSys *object_system_to_draw, sf::Vertex *vector, DisplayWindow *window)
+{
+    assert(object_system_to_draw != nullptr);
+    assert(vector                != nullptr);
+    assert(window                != nullptr);
+
+    Vector parallel_component{((Vector *) (object_system_to_draw->entity_))->get_x() * (-1),
+                              ((Vector *) (object_system_to_draw->entity_))->get_y() * (-1)};
+    set_vector_length(&parallel_component, VECTOR_ARROW_PARALLEL_COMPONENT_SQRT_PIXEL_LENGTH);
+
+    Vector first_side_component{((Vector *) (object_system_to_draw->entity_))->get_y() * (-1), 
+                                ((Vector *) (object_system_to_draw->entity_))->get_x()};
+    set_vector_length(&first_side_component, VECTOR_ARROW_SIDE_COMPONENT_SQRT_PIXEL_LENGTH);
+
+    Vector second_side_component{((Vector *) (object_system_to_draw->entity_))->get_y(), 
+                                 ((Vector *) (object_system_to_draw->entity_))->get_x() * (-1)};
+    set_vector_length(&second_side_component, VECTOR_ARROW_SIDE_COMPONENT_SQRT_PIXEL_LENGTH);
+
+    Vector first_wing  = parallel_component + first_side_component;
+    Vector second_wing = parallel_component + second_side_component;
+
+    vector[2].position.x = vector[1].position.x + first_wing.get_x();
+    vector[2].position.y = vector[1].position.y - first_wing.get_y();
+
+    vector[3].position.x = vector[1].position.x;
+    vector[3].position.y = vector[1].position.y;
+
+    vector[4].position.x = vector[3].position.x + second_wing.get_x();
+    vector[4].position.y = vector[3].position.y - second_wing.get_y();
 }
 
 bool form_vector(ObjSys *object_system_to_draw, sf::Vertex *vector, DisplayWindow *window)
@@ -627,34 +702,71 @@ bool form_vector(ObjSys *object_system_to_draw, sf::Vertex *vector, DisplayWindo
         return false;
     }
 
-    // form_wings
-
+    form_arrow(object_system_to_draw, vector, window);
+    
     return true;
 }
+
+void rotate_vector(Vector *vector_to_rotate, double angle, sf::Time seconds_to_sleep)            // needa erase? or 2 buffers in the window that flip? or nothing?
+{
+    assert(vector_to_rotate != nullptr);
+    assert(std::isfinite(angle));
+    
+    double sin = std::sin(angle);
+    double cos = std::cos(angle);
+
+    double new_x = vector_to_rotate->get_x() * cos + vector_to_rotate->get_y() * (-sin);
+    double new_y = vector_to_rotate->get_x() * sin + vector_to_rotate->get_y() *   cos;
+    
+    double vector_prev_length = sqrt(get_vector_length_square(vector_to_rotate));
+
+    vector_to_rotate->set_x(new_x);
+    vector_to_rotate->set_y(new_y);
+
+    normalize_vector(vector_to_rotate);
+    set_vector_length(vector_to_rotate, vector_prev_length);
+
+    sleep(seconds_to_sleep);
+}
+
+void sleep(double seconds)
+{
+    assert(std::isfinite(seconds));
+
+    sf::sleep(sf::seconds(seconds));
+}
+
+Vector operator +(const Vector &opd1, const Vector &opd2)
+{
+    return Vector{opd1.get_x() + opd2.get_x(), opd1.get_y() + opd2.get_y()};
+}
+
+Vector operator -(const Vector &opd1, const Vector &opd2)
+{
+    return Vector{opd1.get_x() - opd2.get_x(), opd1.get_y() - opd2.get_y()};
+}
+
 
 
 int main()
 {
-    int window_width  = 0;
-    int window_height = 0;
-    std::cout << "Enter window width and window height in pixels, leaving space between these two values:" << std::endl;
-    std::cin  >> window_width >> window_height;    
+    DisplayWindow vector_field(800, 600, "Vectors");
+    CoordSys axes1{-100, -100, 100, 100, 
+                    100,  100, 300, 300,
+                    200,  200};
+    
+    Vector seconds{-80, 0};
+    Vector minutes{-100, 0};
+    Vector hours  {-30, -40};
 
-    char window_name[MAX_WINDOW_NAME_LENGTH + 1] = {};
-    std::cout << "Enter window name:" << std::endl;
-    scanf("%s31", window_name);
-
-    DisplayWindow vector_field(window_width, window_height, window_name);
-    CoordSys axes1{-100, -100, 100, 100, 0, 0, 400, 400};
-    Vector v1{50.3, 35.5};
-    Point point0{10, 10};
-    Vector v2{-100, -200};
-    Point point1{600, 300};
+    Point point0{0, 0};
 
     vector_field.open();
-    v1.draw(&vector_field, &axes1, &point0);
-    // v2.draw(&vector_field, &axes1, &point1);
+    hours.draw  (&vector_field, &axes1, &point0);
+    minutes.draw(&vector_field, &axes1, &point0);
+    seconds.draw(&vector_field, &axes1, &point0);
     
+    int time_passed = 0;
     while (vector_field.is_open())
     {
         vector_field.handle_events();
@@ -662,6 +774,18 @@ int main()
         vector_field.clear();
         vector_field.draw_objects();
         vector_field.display();
+
+        rotate_vector(&seconds, SECONDS_AND_MINUTES_ARROW_ANGLE, sf::seconds(1));
+        ++time_passed;
+        if (time_passed % 60 == 0)
+        {
+            rotate_vector(&minutes, SECONDS_AND_MINUTES_ARROW_ANGLE, sf::seconds(0));
+        }
+        if (time_passed % 3600 == 0)
+        {
+            rotate_vector(&hours,   HOURS_ARROW_ANGLE, sf::seconds(0));
+            time_passed = 0;
+        }
     }
 
     return 0;
