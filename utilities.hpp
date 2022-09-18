@@ -12,7 +12,7 @@
 #include "point.hpp"
 #include "vector.hpp"
 #include "objsys.hpp"
-
+#include "event.hpp"
 
 const double DOUBLE_COMPARISON_PRECISION = 0.001;
 
@@ -39,6 +39,17 @@ void rotate_vector(Vector *vector_to_rotate, double angle, double seconds_to_sle
 
 void sleep(double seconds);
 
+void process_clickable_entities(DisplayWindow *window, Pixel *mouse_click_position);
+
+void process_clickable_vector(DisplayWindow *window, Vector *vector, CoordSys *axes, Pixel *mouse_click_position);
+
 void draw_coordsys(DisplayWindow *window, CoordSys *axes);
+
+void event_close(DisplayWindow *window);
+
+void event_key_pressed(DisplayWindow *window, Event *event);
+
+void event_mouse_button_pressed(DisplayWindow *window, Event *event);
+
 
 #endif

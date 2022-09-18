@@ -55,56 +55,21 @@ void DisplayWindow::handle_events()
         {
             case sf::Event::Closed:
             {
-                close();
+                event_close(this);
 
                 break;
             }
             
             case sf::Event::KeyPressed:
             {
-                if (event.get_key_code() == sf::Keyboard::Escape)
-                {
-                    close();
-                }
+                event_key_pressed(this, &event);
 
                 break;
             }
 
             case sf::Event::MouseButtonPressed:
             {
-                Pixel mouse_click_position{event.get_mouse_click_x_position(), window_height_ - event.get_mouse_click_y_position()};
-                for (size_t obj_index = 0; obj_index < object_buffer_.size_; ++obj_index)
-                {
-                    Drawable *drawable_type_ptr = (Drawable *) object_buffer_.array_[obj_index].entity_;
-                    CoordSys *cur_axes = object_buffer_.array_[obj_index].axes_;
-                    switch (drawable_type_ptr->get_drawable_type())
-                    {
-                        case DrawableType::VECTOR:
-                        {
-                            Vector *vector = (Vector *) drawable_type_ptr;
-                            if ((!vector->get_is_axis_vector())                &&
-                                (cur_axes->get_vulnerability_to_clicks_mode()) &&
-                                (is_in_rectangle(&mouse_click_position, cur_axes->get_left_top_border_coords(),
-                                                                        cur_axes->get_right_bottom_border_coords())))
-                            {
-                                int new_vector_x_pixel_coord = mouse_click_position.get_x() - cur_axes->get_x_origin();
-                                int new_vector_y_pixel_coord = mouse_click_position.get_y() - cur_axes->get_y_origin();
-
-                                
-                                vector->set_x(new_vector_x_pixel_coord * cur_axes->get_x_scale());
-                                vector->set_y(new_vector_y_pixel_coord * cur_axes->get_y_scale());
-                            }
-                            break;
-                        }
-
-                        default:
-                        {
-                            break;
-                        }
-                    }
-
-                    
-                }
+                event_mouse_button_pressed(this, &event);
 
                 break;
             }
@@ -179,13 +144,4 @@ void DisplayWindow::draw_objects()
     {   
         draw_single_object(&object_buffer_.array_[obj_index]);
     }
-}
-
-int DisplayWindow::get_width()
-{
-    return window_width_;
-}
-int DisplayWindow::get_height()
-{
-    return window_height_;  
 }

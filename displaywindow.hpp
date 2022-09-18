@@ -75,9 +75,19 @@ public:
 
     void draw_vector(sf::Vertex *vector);
 
-    int get_width();
-    
-    int get_height();
+    int get_width()
+    {
+        return window_width_;
+    }
+    int get_height()
+    {
+        return window_height_;  
+    }
+
+    ObjSysArr *get_object_buffer()
+    {
+        return &object_buffer_;
+    }
 };
 
 #endif

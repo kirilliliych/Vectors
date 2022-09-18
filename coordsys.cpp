@@ -56,12 +56,12 @@ void CoordSys::update_x_scale()
 {
     int pixel_delta = abs(area_rect_point1_.get_x() - area_rect_point2_.get_x());
 
-    x_scale_ = pixel_delta == 0 ? 0 : (x_max_coord_ - x_min_coord_) / pixel_delta;
+    x_scale_ = pixel_delta == 0 ? 0 : pixel_delta / (x_max_coord_ - x_min_coord_);
 }
 
 void CoordSys::update_y_scale()
 {
     int pixel_delta = abs(area_rect_point1_.get_y() - area_rect_point2_.get_y());
     
-    y_scale_ = pixel_delta == 0 ? 0 : (y_max_coord_ - y_min_coord_) / pixel_delta;
+    y_scale_ = pixel_delta == 0 ? 0 : pixel_delta / (y_max_coord_ - y_min_coord_);
 }

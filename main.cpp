@@ -1,3 +1,4 @@
+#include <ctime>
 #include "displaywindow.hpp"
 #include "coordsys.hpp"
 #include "vector.hpp"
@@ -14,11 +15,11 @@ int main()
                     600,  450}; 
     axes2.set_vulnerability_to_clicks_mode(true);
     
-    Vector seconds{-80,   0};
-    Vector minutes{-100,  0};
-    Vector hours  {-30, -40};
+    Vector seconds{0, 75};
+    Vector minutes{0, 90};
+    Vector hours  {0, 50};
 
-    Point point0{0, 0};
+    Point point0{10, 10};
 
     vector_field.open();
     hours.draw  (&vector_field, &axes1, &point0);
