@@ -8,68 +8,79 @@
 #include <iostream>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include "drawable.hpp"
+#include "point.hpp"
+
+class CoordSys;
+class DisplayWindow;
+
+const size_t VECTOR_ANCHOR_POINTS = 5;
+
+const int VECTOR_ARROW_PARALLEL_COMPONENT_SQRT_PIXEL_LENGTH = 15;
+const int VECTOR_ARROW_SIDE_COMPONENT_SQRT_PIXEL_LENGTH     = 8;
+
+const double SECONDS_AND_MINUTES_ARROW_ANGLE = -0.08727;
+const double HOURS_ARROW_ANGLE               = -0.5236;
 
 
-enum DrawableType
+class Vector : public Drawable
 {
-    VECTOR,
-    UNKNOWN
+private:
+
+    double x_coord_ = 0;
+    double y_coord_ = 0;
+    
+    bool is_axis_vector_ = false;
+
+public:
+    
+    Vector()
+    {
+        type_ = DrawableType::VECTOR;
+    }
+
+    Vector(double x_coord, double y_coord)
+      : x_coord_(x_coord),
+        y_coord_(y_coord)
+    {
+        assert(std::isfinite(x_coord));
+        assert(std::isfinite(y_coord));
+
+        type_ = DrawableType::VECTOR;
+    }
+
+    double get_x() const
+    {
+        return x_coord_;
+    }
+    double get_y() const
+    {
+        return y_coord_;
+    }
+    bool get_is_axis_vector()
+    {
+        return is_axis_vector_;
+    }
+
+    void set_x(double x)
+    {
+        x_coord_ = x;
+    }
+    void set_y(double y)
+    {
+        y_coord_ = y;
+    }
+    void set_is_axis_vector(bool is_axis_vector)
+    {
+        is_axis_vector_ = is_axis_vector;
+    }
+
+    void draw(DisplayWindow *window, CoordSys *axes, Point *beginning); 
 };
 
 
-class Point;
-
-class Pixel;
-
-class CoordSys;
-
-class Event;
-
-class Drawable;
-
-class Vector;
-
-class DisplayWindow;
-
-class DrawableElem;
-
-class ObjSys;
-
-class ObjSysArr;
-
-
-const int COORD_SYS_ORIGIN_FICTIVE_COORD_VALUE  = -1337228;
-
-const size_t MAX_WINDOW_NAME_LENGTH             = 31;
-const size_t STANDARD_WINDOW_WIDTH              = 800;
-const size_t STANDARD_WINDOW_HEIGHT             = 600;
-
-const size_t OBJECTS_ON_THE_SCREEN_MAX_QUANTITY = 1024;
-
-const char *STANDARD_WINDOW_NAME = "SFML Window";
-
-const double DOUBLE_COMPARISON_PRECISION = 0.001;
-
-
-bool is_in_rectangle(Point *point_to_check, Point *point_rect1, Point *point_rect2);
-
-void multiply_vector(Vector *vector, double  multiplier);
-
-double get_vector_length_square(Vector *vector);
-
-void normalize_vector(Vector *vector);
-
-void set_vector_length(Vector *vector, double length);
-
-bool form_line  (ObjSys *object_system_to_draw, sf::Vertex *line,   DisplayWindow *window);
-
-void form_arrow (ObjSys *object_system_to_draw, sf::Vertex *vector, DisplayWindow *window);
-
-bool form_vector(ObjSys *object_system_to_draw, sf::Vertex *line,   DisplayWindow *window);
-
-void rotate_vector(Vector *vector_to_rotate, double angle, sf::Time seconds_to_sleep);
-
 Vector operator +(const Vector &opd1, const Vector &opd2);
 
+Vector operator -(const Vector &opd1, const Vector &opd2);
 
 #endif
