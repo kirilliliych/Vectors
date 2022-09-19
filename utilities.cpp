@@ -221,12 +221,13 @@ void process_clickable_entities(DisplayWindow *window, Pixel *mouse_click_positi
     {
         Drawable *cur_entity = (Drawable *) window->get_object_buffer()->array_[obj_index].entity_;
         CoordSys *cur_axes   =              window->get_object_buffer()->array_[obj_index].axes_;
+        Point    *beginning  =              window->get_object_buffer()->array_[obj_index].beginning_;
 
         switch (cur_entity->get_drawable_type())
         {
             case DrawableType::VECTOR:
             {
-                process_clickable_vector(window, (Vector *) cur_entity, cur_axes, mouse_click_position);
+                process_clickable_vector(window, (Vector *) cur_entity, cur_axes, beginning, mouse_click_position);
                 
                 break;
             }
@@ -239,22 +240,28 @@ void process_clickable_entities(DisplayWindow *window, Pixel *mouse_click_positi
     }
 }
 
-void process_clickable_vector(DisplayWindow *window, Vector *vector, CoordSys *axes, Pixel *mouse_click_position)
+void process_clickable_vector(DisplayWindow *window, Vector *vector, CoordSys *axes, 
+                              Point *beginning, Pixel *mouse_click_position)
 {
     assert(window               != nullptr);
     assert(vector               != nullptr);
     assert(axes                 != nullptr);
+    assert(beginning            != nullptr);
     assert(mouse_click_position != nullptr);
 
     if ((!vector->get_is_axis_vector())            &&
         (axes->get_vulnerability_to_clicks_mode()) &&
-        (is_in_rectangle(mouse_click_position, axes->get_left_top_border_coords(),
-                                               axes->get_right_bottom_border_coords())))
+        (is_in_rectangle(mouse_click_position, axes->get_top_left_border_coords(),
+                                               axes->get_bottom_right_border_coords())))
     {
-        int new_vector_x_pixel_coord = mouse_click_position->get_x() - axes->get_x_origin();     // wrong with not 0 point :(
-        int new_vector_y_pixel_coord = mouse_click_position->get_y() - axes->get_y_origin();
+        int beginning_x_pixel_coord  = beginning->get_x() * axes->get_x_scale();
+        int beginning_y_pixel_coord  = beginning->get_y() * axes->get_y_scale();
+        int new_vector_x_pixel_coord = mouse_click_position->get_x() - (beginning_x_pixel_coord + axes->get_x_origin());
+        int new_vector_y_pixel_coord = mouse_click_position->get_y() - (beginning_y_pixel_coord + axes->get_y_origin());
 
-        vector->set_x(new_vector_x_pixel_coord * axes->get_x_scale());
-        vector->set_y(new_vector_y_pixel_coord * axes->get_y_scale());
+        assert(axes->get_x_scale() != 0);
+        assert(axes->get_y_scale() != 0);
+        vector->set_x(new_vector_x_pixel_coord / axes->get_x_scale());
+        vector->set_y(new_vector_y_pixel_coord / axes->get_y_scale());
     }
 }

@@ -14,7 +14,10 @@
 #include "objsys.hpp"
 #include "event.hpp"
 
+
 const double DOUBLE_COMPARISON_PRECISION = 0.001;
+
+static const void *ABSENT_PTR_POISONED_VALUE = (const void *) 0xDEADBEEF;
 
 
 bool is_in_rectangle(const Point *point, const Point *rect_angle1, const Point *rect_angle2);
@@ -41,7 +44,8 @@ void sleep(double seconds);
 
 void process_clickable_entities(DisplayWindow *window, Pixel *mouse_click_position);
 
-void process_clickable_vector(DisplayWindow *window, Vector *vector, CoordSys *axes, Pixel *mouse_click_position);
+void process_clickable_vector(DisplayWindow *window, Vector *vector, CoordSys *axes, 
+                              Point *beginnning, Pixel *mouse_click_position);
 
 void draw_coordsys(DisplayWindow *window, CoordSys *axes);
 

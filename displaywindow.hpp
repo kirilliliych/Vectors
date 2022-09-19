@@ -17,6 +17,7 @@
 #include "drawable.hpp"
 #include "vector.hpp"
 #include "utilities.hpp"
+#include "rectangle.hpp"
 
 
 const size_t MAX_WINDOW_NAME_LENGTH             = 31;
@@ -41,7 +42,7 @@ private:
     
 public:
 
-    DisplayWindow();
+    DisplayWindow(){};
 
     DisplayWindow(int window_width  = STANDARD_WINDOW_WIDTH, 
                   int window_height = STANDARD_WINDOW_HEIGHT, 
@@ -72,6 +73,8 @@ public:
     void draw_single_object(ObjSys *object_to_draw);
 
     void draw_objects();
+
+    void draw_rectangle(Rectangle *rectangle);
 
     void draw_vector(sf::Vertex *vector);
 

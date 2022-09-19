@@ -6,6 +6,10 @@
 int main()
 {
     DisplayWindow vector_field(800, 600, "Vectors");
+    // Rectangle screen{800, 600};
+    // screen.set_position(0, 0);
+    // screen.draw(&vector_field);
+
     CoordSys axes1{-100, -100, 100, 100, 
                     100,  550, 300, 350,
                     200,  450};

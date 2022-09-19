@@ -110,6 +110,13 @@ void DisplayWindow::draw_vector(sf::Vertex *vector)
     window_.draw(vector + 3, 2, sf::Lines);
 }
 
+void DisplayWindow::draw_rectangle(Rectangle *rectangle)
+{
+    assert(rectangle != nullptr);
+
+    window_.draw(*rectangle->get_rectangle_ptr());
+}
+
 void DisplayWindow::draw_single_object(ObjSys *object_system_to_draw)
 {
     Drawable *drawable_type_ptr = (Drawable *) object_system_to_draw->entity_;                   //  Base class Drawable contains variable type_ of type Drawable
@@ -125,6 +132,15 @@ void DisplayWindow::draw_single_object(ObjSys *object_system_to_draw)
             {
                 draw_vector(vector);
             }
+
+            break;
+        }
+
+        case DrawableType::RECTANGLE:
+        {
+            Rectangle *rectangle = (Rectangle *) drawable_type_ptr; 
+
+            draw_rectangle(rectangle);
 
             break;
         }

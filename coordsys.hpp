@@ -113,11 +113,11 @@ public:
         return is_vulnerable_to_clicks_;
     }
 
-    const Pixel *get_left_top_border_coords()
+    const Pixel *get_top_left_border_coords()
     {
         return &area_rect_point1_;
     }
-    const Pixel *get_right_bottom_border_coords()
+    const Pixel *get_bottom_right_border_coords()
     {
         return &area_rect_point2_;
     }

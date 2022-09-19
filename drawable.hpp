@@ -1,6 +1,7 @@
 #ifndef DRAWABLE_HPP
 #define DRAWABLE_HPP
 
+
 #include <cassert>
 #include <cmath>
 #include <cstring>
@@ -13,6 +14,7 @@
 enum DrawableType
 {
     VECTOR,
+    RECTANGLE,
     UNKNOWN
 };
 
