@@ -4,13 +4,14 @@
 
 // do destructors with poison
 
-void Vector::draw(DisplayWindow *window, CoordSys *axes, Point *beginning)
+void Vector::draw(DisplayWindow *window, CoordSys *axes, Point *beginning, Color *color)
 {
     assert(window    != nullptr);
     assert(axes      != nullptr);
     assert(beginning != nullptr);
+    assert(color     != nullptr);
     
-    window->add_drawable((uint8_t *) this, axes, beginning);
+    window->add_drawable((Drawable *) this, axes, beginning, color);
 }
 
 Vector operator +(const Vector &opd1, const Vector &opd2)

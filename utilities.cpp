@@ -65,6 +65,7 @@ bool form_line(ObjSys *object_system_to_draw, sf::Vertex *line, DisplayWindow *w
     assert(window                != nullptr);
 
     Vector *vector_to_draw = (Vector *) object_system_to_draw->entity_;
+
     double x_beginning = object_system_to_draw->beginning_->get_x();
     double y_beginning = object_system_to_draw->beginning_->get_y();
     double x_ending    = object_system_to_draw->beginning_->get_x() + vector_to_draw->get_x();
@@ -85,6 +86,11 @@ bool form_line(ObjSys *object_system_to_draw, sf::Vertex *line, DisplayWindow *w
     line[1].position.x = (int) (x_ending    * object_system_to_draw->axes_->get_x_scale() + object_system_to_draw->axes_->get_x_origin());
     line[0].position.y = window->get_height() - (int) (y_beginning * object_system_to_draw->axes_->get_y_scale()) - object_system_to_draw->axes_->get_y_origin();
     line[1].position.y = window->get_height() - (int) (y_ending    * object_system_to_draw->axes_->get_y_scale()) - object_system_to_draw->axes_->get_y_origin();
+
+    Color *line_color = object_system_to_draw->color_;
+
+    line[0].color = line_color->get_color_ref();
+    line[1].color = line_color->get_color_ref();
 
     return true;
 }
@@ -118,6 +124,12 @@ void form_arrow(ObjSys *object_system_to_draw, sf::Vertex *vector, DisplayWindow
 
     vector[4].position.x = vector[3].position.x + second_wing.get_x();
     vector[4].position.y = vector[3].position.y - second_wing.get_y();
+
+    Color *vector_color = object_system_to_draw->color_;
+
+    vector[2].color = vector_color->get_color_ref();
+    vector[3].color = vector_color->get_color_ref();
+    vector[4].color = vector_color->get_color_ref();
 }
 
 bool form_vector(ObjSys *object_system_to_draw, sf::Vertex *vector, DisplayWindow *window)
@@ -165,7 +177,7 @@ void sleep(double seconds)
     sf::sleep(sf::seconds(seconds));
 }
 
-void draw_coordsys(DisplayWindow *window, CoordSys *axes)
+void draw_coordsys(DisplayWindow *window, CoordSys *axes, Color *color)
 {
     assert(window != nullptr);
     assert(axes   != nullptr);
@@ -180,8 +192,8 @@ void draw_coordsys(DisplayWindow *window, CoordSys *axes)
     axes->y_axis_beginning_.set_x(0);
     axes->y_axis_beginning_.set_y(axes->get_y_min());
 
-    axes->x_axis_.draw(window, axes, &axes->x_axis_beginning_);
-    axes->y_axis_.draw(window, axes, &axes->y_axis_beginning_);
+    axes->x_axis_.draw(window, axes, &axes->x_axis_beginning_, color);
+    axes->y_axis_.draw(window, axes, &axes->y_axis_beginning_, color);
 }
 
 void event_close(DisplayWindow *window)

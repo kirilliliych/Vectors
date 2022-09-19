@@ -46,5 +46,6 @@ void Rectangle::draw(DisplayWindow *window)
 {
     assert(window != nullptr);
 
-    window->add_drawable((uint8_t *) this, (CoordSys *) ABSENT_PTR_POISONED_VALUE, (Point *) ABSENT_PTR_POISONED_VALUE);
+    window->add_drawable((Drawable *) this, (CoordSys *) ABSENT_PTR_POISONED_VALUE, (Point *) ABSENT_PTR_POISONED_VALUE, 
+                                            (Color *) ABSENT_PTR_POISONED_VALUE);
 }

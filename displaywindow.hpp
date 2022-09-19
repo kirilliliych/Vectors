@@ -62,7 +62,7 @@ public:
 
     void handle_events();
 
-    void add_drawable(uint8_t *entity, CoordSys *axis, Point *beginning);
+    void add_drawable(Drawable *entity, CoordSys *axis, Point *beginning, Color *color);
     
     void handle_draw_requests();
 

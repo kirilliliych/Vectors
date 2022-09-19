@@ -1,4 +1,4 @@
-  #ifndef OBJSYS_HPP
+#ifndef OBJSYS_HPP
 #define OBJSYS_HPP
 
 
@@ -11,22 +11,25 @@
 #include <SFML/Graphics.hpp>
 #include "coordsys.hpp"
 #include "point.hpp"
+#include "color.hpp"
 
 
 class ObjSys
 {
 public:
 
-    uint8_t  *entity_    = nullptr;
+    Drawable *entity_    = nullptr;
     CoordSys *axes_      = nullptr;
     Point    *beginning_ = nullptr;
+    Color    *color_     = nullptr;
 
     ObjSys(){};
 
-    ObjSys(uint8_t *entity, CoordSys *axes, Point *point)
+    ObjSys(Drawable *entity, CoordSys *axes, Point *point, Color *color)
       : entity_(entity),
         axes_(axes),
-        beginning_(point) 
+        beginning_(point),
+        color_(color)
     {}
 };
 

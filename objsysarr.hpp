@@ -23,7 +23,7 @@ public:
     ObjSys array_[OBJECTS_ON_THE_SCREEN_MAX_QUANTITY];
     size_t size_ = 0;
 
-    void add(uint8_t *entity, CoordSys *axes, Point *beginning);
+    void add(Drawable *entity, CoordSys *axes, Point *beginning, Color *color);
 };
 
 #endif

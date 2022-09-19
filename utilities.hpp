@@ -47,7 +47,7 @@ void process_clickable_entities(DisplayWindow *window, Pixel *mouse_click_positi
 void process_clickable_vector(DisplayWindow *window, Vector *vector, CoordSys *axes, 
                               Point *beginnning, Pixel *mouse_click_position);
 
-void draw_coordsys(DisplayWindow *window, CoordSys *axes);
+void draw_coordsys(DisplayWindow *window, CoordSys *axes, Color *color);
 
 void event_close(DisplayWindow *window);
 

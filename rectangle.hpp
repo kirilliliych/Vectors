@@ -12,6 +12,7 @@
 #include "point.hpp"
 #include "drawable.hpp"
 #include "utilities.hpp"
+#include "color.hpp"
 
 
 class DisplayWindow;
@@ -42,6 +43,13 @@ public:
     void set_size(double x_size, double y_size);
 
     void set_position(double x_position, double y_position);
+
+    void set_fill_color(Color *color)
+    {
+        assert(color != nullptr);
+
+        rectangle_.setFillColor(color->get_color_ref());
+    }
 
     void draw(DisplayWindow *window);
 };

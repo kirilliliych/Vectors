@@ -10,6 +10,7 @@
 #include <SFML/Graphics.hpp>
 #include "drawable.hpp"
 #include "point.hpp"
+#include "color.hpp"
 
 class CoordSys;
 class DisplayWindow;
@@ -75,12 +76,14 @@ public:
         is_axis_vector_ = is_axis_vector;
     }
 
-    void draw(DisplayWindow *window, CoordSys *axes, Point *beginning); 
+    void draw(DisplayWindow *window, CoordSys *axes, Point *beginning, Color *color); 
 };
 
 
 Vector operator +(const Vector &opd1, const Vector &opd2);
 
 Vector operator -(const Vector &opd1, const Vector &opd2);
+
+// do scalar
 
 #endif

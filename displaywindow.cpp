@@ -82,13 +82,14 @@ void DisplayWindow::handle_events()
     }
 }
 
-void DisplayWindow::add_drawable(uint8_t *entity, CoordSys *axes, Point *beginning)
+void DisplayWindow::add_drawable(Drawable *entity, CoordSys *axes, Point *beginning, Color *color)
 {
     assert(entity    != nullptr);
     assert(axes      != nullptr);
     assert(beginning != nullptr);
+    assert(color     != nullptr);
 
-    object_buffer_.add(entity, axes, beginning);
+    object_buffer_.add(entity, axes, beginning, color);
 }
 
 void DisplayWindow::clear()
